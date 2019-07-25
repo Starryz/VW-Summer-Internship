@@ -1,6 +1,5 @@
 library(readxl)
 library(tidyverse)
-library(readr)
 
 # commits 
 commits_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
