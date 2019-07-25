@@ -41,5 +41,9 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
          GRANT_PERIOD_START__C, PROGRAM_COHORT_RECORD_TYPE__C, 
          PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C, PROGRAM__C)
   
-  
-  
+# team export
+task_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
+  rename("NAME" = "Grant Title") %>% 
+  rename("PROPOSAL_TOTAL_FUNDED_AWARD_AMOUNT__C" = "Amount Approved") %>% 
+  mutate("END_DATE_OF_FIRST_PROGRAM_COMPLETED__C" = as.Date(`Actual Period End`)) %>% 
+  select(NAME, PROPOSAL_TOTAL_FUNDED_AWARD_AMOUNT__C, END_DATE_OF_FIRST_PROGRAM_COMPLETED__C)
