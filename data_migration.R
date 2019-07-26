@@ -2,7 +2,7 @@ library(readxl)
 library(tidyverse)
 library(stringi)
 
-# load extract --------------
+# help match --------------
 ## for commit
 extract_c <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
   rename("GRANTED_INSTITUTION__C" = "NAME") %>% 
@@ -12,7 +12,6 @@ extract_alias_c <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sa
   rename("GRANTED_INSTITUTION__C" = "ORGANIZATION_ALIAS_NAME__C") %>% 
   select(-NAME)
 
-
 ## for proposal
 extract_p <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
   rename("APPLYING_INSTITUTION_NAME__C" = "NAME") %>% 
@@ -21,6 +20,27 @@ extract_p <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesfor
 extract_alias_p <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
   rename("APPLYING_INSTITUTION_NAME__C" = "ORGANIZATION_ALIAS_NAME__C") %>% 
   select(-NAME)
+
+## match Zenn ID and team name
+match <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx", 
+                    col_types = c("numeric", "text", "text", 
+                                  "text", "text", "numeric", "text", 
+                                  "text", "text", "text", "text", "text", 
+                                  "text", "text", "numeric", "text", 
+                                  "numeric", "text", "text", "text", 
+                                  "numeric", "text", "text", "text", 
+                                  "numeric", "text", "text", "numeric", 
+                                  "text", "text", "numeric", "text", 
+                                  "text", "text", "text", "text")) %>% 
+  select(`Zenn ID`, `Grant Title`, `Institution Name`)
+
+match_c <- match %>% 
+  rename("GRANTED_INSTITUTION__C" = "Institution Name") %>% 
+  select(-`Grant Title`)
+
+match_p <- match %>% 
+  rename("NAME" = "Grant Title") %>% 
+  select(-`Institution Name`)
 
 # commits ------------------
 commits_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
@@ -50,6 +70,7 @@ commits_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gran
   left_join(extract_alias_c, by = "GRANTED_INSTITUTION__C") %>% 
   mutate(ID = coalesce(ID.x, ID.y)) %>% 
   select(-ID.x, -ID.y) %>% 
+  left_join(match_c) %>% 
   write_csv("new/commits_2013.csv")
 
 commits_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -109,6 +130,7 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 
   mutate(ID = coalesce(ID.x, ID.y)) %>% 
   select(-ID.x, -ID.y) %>% 
+  left_join(match_p)
   write_csv("new/proposal_2013.csv")
 
 proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -154,6 +176,7 @@ team_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   select(
     NAME, PROPOSAL_TOTAL_FUNDED_AWARD_AMOUNT__C, END_DATE_OF_FIRST_PROGRAM_COMPLETED__C
   ) %>% 
+  left_join(match_p) %>% 
   write_csv("new/team_2013.csv")
 
 team_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -167,6 +190,7 @@ team_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   select(
     NAME, PROPOSAL_TOTAL_FUNDED_AWARD_AMOUNT__C, END_DATE_OF_FIRST_PROGRAM_COMPLETED__C
   ) %>% 
+  left_join(match_p) %>% 
   write_csv("new/team_2012.csv")
 
 # membership -----------------------------
@@ -219,9 +243,18 @@ membership_2013 <- merge(membership_2013_2, advisors) %>%
     PROPOSAL_STATUS__C, LAST_NAME__C, TEAM_NAME_TEXT_ONLY_HIDDEN__C
   ) %>% 
   write_csv("new/member_2013.csv")
-## note: status needs capitalization 
+## note: status needs capitalization  - stri_trans_totitle()
 
 # task -------------------------------------------------
 task_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_post_award_notes.xlsx", 
                         col_types = c("numeric", "date", "text", 
-                                      "text"))
+                                      "text")) %>% 
+  left_join(match) %>% 
+  rename("WHATID" = "Zenn ID",
+         "DESCRIPTION" = "Note") %>% 
+  mutate(STATUS = "Completed",
+         PRIORITY = "Normal") %>% 
+  select(
+    WHATID, DESCRIPTION, STATUS, PRIORITY
+  ) %>% 
+  write_csv("new/task_2013.csv")
