@@ -246,15 +246,26 @@ membership_2013 <- merge(membership_2013_2, advisors) %>%
 ## note: status needs capitalization  - stri_trans_totitle()
 
 # task -------------------------------------------------
-task_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_post_award_notes.xlsx", 
-                        col_types = c("numeric", "date", "text", 
+task_2013 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustainable_vision_grants_2013_post_award_notes.xlsx", 
+                        col_types = c("numeric", "text", "text", 
                                       "text")) %>% 
   left_join(match) %>% 
   rename("WHATID" = "Zenn ID",
          "DESCRIPTION" = "Note") %>% 
   mutate(STATUS = "Completed",
-         PRIORITY = "Normal") %>% 
+         PRIORITY = "Normal",
+         TYPE = "Internal Note",
+         TASKSUBTYPE = "Call",
+         ACTIVITYDATE = as.Date(`Created Date`), 
+         OWNER = ifelse(`Created by` == "Brenna Breeding", "00539000005UlQaAAK",
+           ifelse(`Created by` == "Michael Norton", "00539000004pukIAAQ",
+             ifelse(`Created by` == "Patricia Boynton", "00570000001K3bpAAC",
+                    ifelse(`Created by` == "Rachel Agoglia", "00570000003QASWAA4",
+                           "00570000004VlXPAA0"))
+           )
+         )
+         ) %>% 
   select(
-    WHATID, DESCRIPTION, STATUS, PRIORITY
+    WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER
   ) %>% 
   write_csv("new/task_2013.csv")
