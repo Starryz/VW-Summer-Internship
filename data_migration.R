@@ -274,5 +274,6 @@ task_2013 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
          ) %>% 
   select(
     WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER
-  ) %>% 
+  ) 
+# commit
   write_csv("new/task_2013.csv")
