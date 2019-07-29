@@ -170,11 +170,11 @@ team_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
     "NAME" = "Grant Title"
   ) %>% 
   mutate(
-    "END_DATE_OF_FIRST_PROGRAM_COMPLETED__C" = as.Date(`Actual Period End`),
-    "PROPOSAL_TOTAL_FUNDED_AWARD_AMOUNT__C" = as.double(`Amount Approved`)
+    "RECORDTYPEID" = "a2639000000E4XIAA0",
+    "ALIAS__C" = ifelse(nchar(NAME)  > 80, NAME, "")
   ) %>% 
   select(
-    NAME, PROPOSAL_TOTAL_FUNDED_AWARD_AMOUNT__C, END_DATE_OF_FIRST_PROGRAM_COMPLETED__C
+    NAME, RECORDTYPEID, ALIAS__C
   ) %>% 
   left_join(match_p) %>% 
   write_csv("new/team_2013.csv")
