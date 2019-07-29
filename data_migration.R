@@ -1,6 +1,7 @@
 library(readxl)
 library(tidyverse)
 library(stringi)
+library(readr)
 
 # help match --------------
 ## for commit
@@ -102,12 +103,13 @@ commits_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gran
 proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
   rename(
     "NAME" = "Grant Title",
-    "APPLYING_INSTITUTION_NAME__C" = "Institution Name",
+    #"APPLYING_INSTITUTION_NAME__C" = "Institution Name",
     "PROGRAM_COHORT_RECORD_TYPE__C" = "Type",
     "PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C" = "Proposal Summary",
     "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID"
   ) %>% 
   mutate(
+    "RECORDTYPEID" = "01239000000Ap02AAC",
     "STATUS__C" = stri_trans_totitle(`Application Status`),
     "PROPOSAL_NAME_LONG_VERSION__C" = as.character(NAME),
     "DATE_CREATED__C" = as.Date(`Date Created`),
@@ -117,10 +119,14 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "AMOUNT_REQUESTED__C" = as.double(`Amount Requested`),
     "ZENN_ID__C" = as.double(`Zenn ID`),
     "AWARD_AMOUNT__C" = as.double(`Amount Approved`), 
-    "PROGRAM_COHORT__C" = "a2C39000002zYt4EAE"
+    "PROGRAM_COHORT__C" = "a2C39000002zYt4EAE",
+    "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
+    "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` == "University of Tennessee, Knoxville", "The University of Tennessee",
+                                            ifelse(`Institution Name` == "Cogswell Polytechnical College", "Cogswell College",
+                                                   ifelse(`Institution Name` == "Arizona State University at the Tempe Campus", "Arizona State University", `Institution Name`)))
   ) %>% 
   select(
-    NAME, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
+    NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
     AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
     GRANT_PERIOD_START__C, PROGRAM_COHORT_RECORD_TYPE__C, 
     PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
@@ -130,7 +136,8 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 
   mutate(ID = coalesce(ID.x, ID.y)) %>% 
   select(-ID.x, -ID.y) %>% 
-  left_join(match_p)
+  rename("APPLYING_INSTITUTION__C" = "ID") %>% 
+  left_join(match_p) %>% 
   write_csv("new/proposal_2013.csv")
 
 proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
