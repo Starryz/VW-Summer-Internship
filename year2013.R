@@ -119,7 +119,11 @@ proposal_2013$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(propos
 
 str_remove_all("\u0093systems\u0094", "[[\\[u]+[0-9]*]]")
 
-proposal_2013 %>% write_csv("new/proposal_2013.csv")
+proposal_2013 <- sapply(proposal_2013, as.character)
+proposal_2013[is.na(proposal_2013)] <- " "
+proposal_2013 <- as.data.frame(proposal_2013)
+
+write_csv(proposal_2013, "new/proposal_2013.csv")
 
 # team --------------------------
 team_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
@@ -214,4 +218,4 @@ task_2013 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
   select(
     WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
   ) %>% 
-write_csv("new/task_2013.csv")
+write_csv("new/note_task_2013.csv")
