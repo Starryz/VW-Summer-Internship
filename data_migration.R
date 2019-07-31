@@ -140,6 +140,9 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   left_join(match_p) %>% 
   write_csv("new/proposal_2013.csv")
 
+try <- rex::rex(proposal_2013$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C[2])
+
+
 proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
   rename(
     "NAME" = "Grant Title",
