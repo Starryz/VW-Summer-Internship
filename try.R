@@ -1,57 +1,19 @@
-library(readxl)
-library(tidyverse)
-library(stringi)
-library(readr)
-library(data.table)
-
-# setup --------------
-## for commit
-extract_c <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
-  rename("GRANTED_INSTITUTION__C" = "NAME") %>% 
-  select(-ORGANIZATION_ALIAS_NAME__C)
-
-extract_alias_c <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
-  rename("GRANTED_INSTITUTION__C" = "ORGANIZATION_ALIAS_NAME__C") %>% 
-  select(-NAME)
-
-## for proposal
-extract_p <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
-  rename("APPLYING_INSTITUTION_NAME__C" = "NAME") %>% 
-  select(-ORGANIZATION_ALIAS_NAME__C)
-
-extract_alias_p <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
-  rename("APPLYING_INSTITUTION_NAME__C" = "ORGANIZATION_ALIAS_NAME__C") %>% 
-  select(-NAME) %>% 
-  na.omit()
-
-## match Zenn ID and team name
-match <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx", 
-                    col_types = c("numeric", "text", "text", 
-                                  "text", "text", "numeric", "text", 
-                                  "text", "text", "text", "text", "text", 
-                                  "text", "text", "numeric", "text", 
-                                  "numeric", "text", "text", "text", 
-                                  "numeric", "text", "text", "text", 
-                                  "numeric", "text", "text", "numeric", 
-                                  "text", "text", "numeric", "text", 
-                                  "text", "text", "text", "text")) %>% 
-  select(`Zenn ID`, `Grant Title`, `Institution Name`)
-
-match_c <- match %>% 
-  rename("GRANTED_INSTITUTION__C" = "Institution Name") %>% 
-  select(-`Grant Title`)
-
-match_p <- match %>% 
-  rename("NAME" = "Grant Title") %>% 
-  select(-`Institution Name`)
-
 # proposal -------------------------------
-proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
+goal <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
   rename(
     "NAME" = "Grant Title",
     "PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C" = "Proposal Summary",
     "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID"
   ) %>% 
+  select(PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C) 
+
+
+str_replace_all(string = goal$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C[1],
+                  pattern  = "\\\\u",
+                replacement = "GJAKLUTLIAUgautralkurlkauwelkrukla") %>% 
+  write("try.txt")
+  
+  
   mutate(
     "RECORDTYPEID" = "01239000000Ap02AAC",
     "STATUS__C" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
