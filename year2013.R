@@ -85,6 +85,8 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   ) %>% 
   mutate(
     "RECORDTYPEID" = "01239000000Ap02AAC",
+    "PROGRAM_COHORT__C" = "a2C39000002zYt4EAE",
+    "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
     "STATUS__C" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
     "PROPOSAL_NAME_LONG_VERSION__C" = as.character(NAME),
     "DATE_CREATED__C" = as.Date(`Date Created`),
@@ -94,8 +96,6 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "AMOUNT_REQUESTED__C" = as.double(`Amount Requested`),
     "ZENN_ID__C" = as.double(`Zenn ID`),
     "AWARD_AMOUNT__C" = as.double(`Amount Approved`), 
-    "PROGRAM_COHORT__C" = "a2C39000002zYt4EAE",
-    "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
     "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` == "University of Tennessee, Knoxville", "The University of Tennessee",
                                             ifelse(`Institution Name` == "Cogswell Polytechnical College", "Cogswell College",
                                                    ifelse(`Institution Name` == "Arizona State University at the Tempe Campus", "Arizona State University", `Institution Name`)))
@@ -105,7 +105,7 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
     GRANT_PERIOD_START__C, PROGRAM_COHORT_RECORD_TYPE__C, 
     PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
-    EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C
+    EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, PROPOSAL_FUNDER__C
   ) %>% 
   left_join(extract_p) %>% 
   left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 

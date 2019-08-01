@@ -68,22 +68,24 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "AWARD_AMOUNT__C" = as.double(`Amount Approved`), 
     "PROGRAM_COHORT__C" = "a2C39000002zYt4EAE",
     "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
+    "PROGRAM_COHORT_RECORD_TYPE__C" = "Type",
     "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` == "University of Oklahoma", "University of Oklahoma Norman Campus",`Institution Name`)
   ) %>% 
   select(
     NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
     AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
-    GRANT_PERIOD_START__C, 
+    GRANT_PERIOD_START__C,PROGRAM_COHORT_RECORD_TYPE__C, 
     PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
-    EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C
+    EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, PROPOSAL_FUNDER__C
   ) %>% 
+  filter(is.na(APPLYING_INSTITUTION_NAME__C) == FALSE) %>% 
   left_join(extract_p) %>% 
   left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 
   mutate(ID = coalesce(ID.x, ID.y)) %>% 
   select(-ID.x, -ID.y) %>% 
   rename("APPLYING_INSTITUTION__C" = "ID") %>% 
+  # select(-'Zenn ID') %>%  ??????????
   left_join(match_p) %>% 
-  select( - `Zenn ID`, APPLYING_INSTITUTION_NAME__C) %>% 
   unique()
 
 proposal_2012$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(proposal_2012$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, "[:cntrl:]", " ")
