@@ -3,7 +3,7 @@ goal <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_
   rename(
     "NAME" = "Grant Title",
     "PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C" = "Proposal Summary",
-    "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID"
+    "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID" 
   ) %>%  
   select(PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C) 
 
