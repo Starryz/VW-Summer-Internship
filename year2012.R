@@ -138,7 +138,7 @@ team_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
     NAME, RECORDTYPEID, ALIAS__C
   ) %>% 
   left_join(match_p) %>% 
-  write_csv("new/team_2012.csv")
+  write_csv("new/2012/team_2012.csv")
 
 # membership -----------------------------
 membership_2012_1a <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
