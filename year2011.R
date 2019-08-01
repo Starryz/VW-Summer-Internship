@@ -1,10 +1,9 @@
+# setup --------------
 library(readxl)
 library(tidyverse)
 library(stringi)
 library(readr)
 library(data.table)
-
-# setup --------------
 ## for commit
 extract_c <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
   rename("GRANTED_INSTITUTION__C" = "NAME") %>% 
@@ -25,7 +24,7 @@ extract_alias_p <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sa
   na.omit()
 
 ## match Zenn ID and team name
-match <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2011_proposals.xlsx", 
+match <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2010_proposals.xlsx", 
                     col_types = c("numeric", "text", "text", 
                                   "text", "text", "numeric", "text", 
                                   "text", "text", "text", "text", "text", 
@@ -45,8 +44,10 @@ match_p <- match %>%
   rename("NAME" = "Grant Title") %>% 
   select(-`Institution Name`)
 
-# proposal -------------------------------
-proposal_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2011_proposals.xlsx") %>% 
+
+# actual -------
+# proposal
+proposal_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2010_proposals.xlsx") %>% 
   rename(
     "NAME" = "Grant Title",
     "PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C" = "Proposal Summary",
@@ -69,72 +70,78 @@ proposal_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
                                             ifelse(`Institution Name` == "Indiana University Northwest", "Indiana University-Northwest",
                                                    ifelse(`Institution Name` == "University of Maryland, Baltimore County", "University of Maryland-Baltimore County",
                                                           `Institution Name`)))) %>% 
-  select(
-    NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
-    AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
-    GRANT_PERIOD_START__C, 
-    PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
-    EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C
-  ) %>% 
-  left_join(extract_p) %>% 
-  left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 
-  mutate(ID = coalesce(ID.x, ID.y)) %>% 
-  select(-ID.x, -ID.y) %>% 
-  rename("APPLYING_INSTITUTION__C" = "ID") %>% 
-  left_join(match_p) %>% 
-  select( - `Zenn ID`, APPLYING_INSTITUTION_NAME__C) %>% 
-  unique()
-
-proposal_2011$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(proposal_2011$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, "[:cntrl:]", " ")
-
-proposal_2011 <- sapply(proposal_2011, as.character)
-proposal_2011[is.na(proposal_2011)] <- " "
-proposal_2011 <- as.data.frame(proposal_2011)
-
-write_csv(proposal_2011, "new/2011/proposal_2011.csv")
-
-
-# team --------------------------
-team_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2011_proposals.xlsx") %>% 
-  rename(
-    "NAME" = "Grant Title"
-  ) %>% 
-  mutate(
-    "RECORDTYPEID" = "012390000009qKOAAY",
-    "ALIAS__C" = ifelse(nchar(NAME)  > 80, NAME, "")
-  ) %>% 
-  select(
-    NAME, RECORDTYPEID, ALIAS__C
-  ) %>% 
-  left_join(match_p) %>% 
-  write_csv("new/2011/team_2011.csv")
-
-# note_task -------------------------------------------------
-task_2011 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustainable_vision_grants_2011_post_award_notes.xlsx", 
-                        col_types = c("numeric", "text", "text", 
-                                      "text")) %>% 
-  set_names(c("Zenn ID", "Created Date", "Created by",	"Note")) %>% 
-  left_join(match) %>% 
-  rename("WHATID" = "Zenn ID",
-         "DESCRIPTION" = "Note") %>% 
-  mutate(STATUS = "Completed",
-         PRIORITY = "Normal",
-         TYPE = "Internal Note",
-         TASKSUBTYPE = "Call",
-         ACTIVITYDATE = as.Date(`Created Date`), 
-         SUBJECT = "Post Award Note--",
-         OWNER = ifelse(`Created by` == "Brenna Breeding", "00539000005UlQaAAK",
-                        ifelse(`Created by` == "Michael Norton", "00539000004pukIAAQ",
-                               ifelse(`Created by` == "Patricia Boynton", "00570000001K3bpAAC",
-                                      ifelse(`Created by` == "Rachel Agoglia", "00570000003QASWAA4",
-                                             ifelse(`Created by` == "Allyson Chabot", "0033900001x6eGUAAY",
-                                                    "00570000004VlXPAA0")))
-                        )
-         )
-  ) %>% 
-  unite("SUBJECT", c(SUBJECT, `Created Date`), sep = "", remove = FALSE) %>% 
-  unite("SUBJECT", c(SUBJECT, `Created by`), sep = " ", remove = FALSE) %>% 
-  select(
-    WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
-  ) %>% 
-  write_csv("new/2011/note_task_2011.csv")
+    "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` == "Polytechnic Institute of New York University", "New York University", 
+                                            ifelse(`Institution Name` == "University of Minnesota", "University of Minnesota-Twin Citie",
+                                                   ifelse(`Institution Name` == "University of Texas at San Antonio", "The University of Texas at San Antonio",
+                                                          ifelse(`Institution Name` == "Arizona State University at the Tempe Campus", "Arizona State University",
+                                                                 `Institution Name`))))) %>% 
+      select(
+        NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
+        AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
+        GRANT_PERIOD_START__C, 
+        PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
+        EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C
+      ) %>% 
+      left_join(extract_p) %>% 
+      left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 
+      mutate(ID = coalesce(ID.x, ID.y)) %>% 
+      select(-ID.x, -ID.y) %>% 
+      rename("APPLYING_INSTITUTION__C" = "ID") %>% 
+      left_join(match_p) %>% 
+      select( - `Zenn ID`, APPLYING_INSTITUTION_NAME__C) %>% 
+      unique()
+    
+    proposal_2010$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(proposal_2010$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, "[:cntrl:]", " ")
+    
+    proposal_2010 <- sapply(proposal_2010, as.character)
+    proposal_2010[is.na(proposal_2010)] <- " "
+    proposal_2010 <- as.data.frame(proposal_2010)
+    
+    write_csv(proposal_2010, "new/2010/proposal_2010.csv")
+    
+    
+    # team 
+    team_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2010_proposals.xlsx") %>% 
+      rename(
+        "NAME" = "Grant Title"
+      ) %>% 
+      mutate(
+        "RECORDTYPEID" = "012390000009qKOAAY",
+        "ALIAS__C" = ifelse(nchar(NAME)  > 80, NAME, "")
+      ) %>% 
+      select(
+        NAME, RECORDTYPEID, ALIAS__C
+      ) %>% 
+      left_join(match_p) %>% 
+      write_csv("new/2010/team_2010.csv")
+    
+    # note_task 
+    task_2010 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustainable_vision_grants_2010_post_award_notes.xlsx", 
+                            col_types = c("numeric", "text", "text", 
+                                          "text")) %>% 
+      set_names(c("Zenn ID", "Created Date", "Created by",	"Note")) %>% 
+      left_join(match) %>% 
+      rename("WHATID" = "Zenn ID",
+             "DESCRIPTION" = "Note") %>% 
+      mutate(STATUS = "Completed",
+             PRIORITY = "Normal",
+             TYPE = "Internal Note",
+             TASKSUBTYPE = "Call",
+             ACTIVITYDATE = as.Date(`Created Date`), 
+             SUBJECT = "Post Award Note--",
+             OWNER = ifelse(`Created by` == "Brenna Breeding", "00539000005UlQaAAK",
+                            ifelse(`Created by` == "Michael Norton", "00539000004pukIAAQ",
+                                   ifelse(`Created by` == "Patricia Boynton", "00570000001K3bpAAC",
+                                          ifelse(`Created by` == "Rachel Agoglia", "00570000003QASWAA4",
+                                                 ifelse(`Created by` == "Allyson Chabot", "0033900001x6eGUAAY",
+                                                        "00570000004VlXPAA0")))
+                            )
+             )
+      ) %>% 
+      unite("SUBJECT", c(SUBJECT, `Created Date`), sep = "", remove = FALSE) %>% 
+      unite("SUBJECT", c(SUBJECT, `Created by`), sep = " ", remove = FALSE) %>% 
+      select(
+        WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
+      ) %>% 
+      write_csv("new/2010/note_task_2010.csv")
+    

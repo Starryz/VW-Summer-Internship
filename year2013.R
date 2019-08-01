@@ -219,3 +219,4 @@ task_2013 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
     WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
   ) %>% 
   write_csv("new/note_task_2013.csv")
+%>% 
