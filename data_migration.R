@@ -138,10 +138,13 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   select(-ID.x, -ID.y) %>% 
   rename("APPLYING_INSTITUTION__C" = "ID") %>% 
   left_join(match_p) %>% 
-  write_csv("new/proposal_2013.csv")
+  select( - `Zenn ID`)
 
-try <- rex::rex(proposal_2013$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C[2])
+proposal_2013$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(proposal_2013$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, "[:cntrl:]", " ")
 
+proposal_2013 %>% write_csv("new/proposal_2013.csv")
+
+str_remove_all("\u0093systems\u0094", "[[\\[u]+[0-9]*]]")
 
 proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
   rename(

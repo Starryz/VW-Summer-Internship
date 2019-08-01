@@ -85,7 +85,7 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   ) %>% 
   mutate(
     "RECORDTYPEID" = "01239000000Ap02AAC",
-    "STATUS__C" = stri_trans_totitle(`Application Status`),
+    "STATUS__C" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
     "PROPOSAL_NAME_LONG_VERSION__C" = as.character(NAME),
     "DATE_CREATED__C" = as.Date(`Date Created`),
     "DATE_SUBMITTED__C" = as.Date(`Date Application Submitted`),
@@ -131,7 +131,7 @@ team_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
     "NAME" = "Grant Title"
   ) %>% 
   mutate(
-    "RECORDTYPEID" = "a2639000000E4XIAA0",
+    "RECORDTYPEID" = "012390000009qKOAAY",
     "ALIAS__C" = ifelse(nchar(NAME)  > 80, NAME, "")
   ) %>% 
   select(
@@ -212,10 +212,10 @@ task_2013 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
                                              "00570000004VlXPAA0"))
                         )
          )
-         ) %>% 
+  ) %>% 
   unite("SUBJECT", c(SUBJECT, `Created Date`), sep = "", remove = FALSE) %>% 
   unite("SUBJECT", c(SUBJECT, `Created by`), sep = " ", remove = FALSE) %>% 
   select(
     WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
   ) %>% 
-write_csv("new/note_task_2013.csv")
+  write_csv("new/note_task_2013.csv")
