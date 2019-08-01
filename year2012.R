@@ -2,8 +2,9 @@ library(readxl)
 library(tidyverse)
 library(stringi)
 library(readr)
+library(data.table)
 
-# help match --------------
+# setup --------------
 ## for commit
 extract_c <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
   rename("GRANTED_INSTITUTION__C" = "NAME") %>% 
@@ -44,43 +45,10 @@ match_p <- match %>%
   rename("NAME" = "Grant Title") %>% 
   select(-`Institution Name`)
 
-# commits ------------------
-commits_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
-  filter(`Application Status` == "funded") %>% 
-  rename(
-    "GRANT_ID__C" = "External Proposal ID", 
-    "GRANTED_INSTITUTION__C" = "Institution Name",
-    "AMOUNT_DISBURSED__C" = "Amount Disbursed",
-    "PROGRAM__C" = "Type"
-  ) %>% 
-  mutate(
-    "DISBURSEMENT_REQUEST_AMOUNT__C" = as.double(AMOUNT_DISBURSED__C),
-    "GRANT_STATUS__C" = stri_trans_totitle(`Application Status`),
-    "AWARD_LETTER_SENT__C" = as.Date(`Grant Letter Sent`),
-    "AWARD_LETTER_SIGNED__C" = as.Date(`Grant Letter Signed`),
-    "GRANT_START_DATE__C" = as.Date(`Actual Period Begin`),
-    "GRANT_END_DATE__C" = as.Date(`Actual Period End`),
-    "PAYMENT_STATUS__C" = "Paid", 
-    "AMOUNT_APPROVED__C" = as.double(`Amount Approved`)
-  ) %>% 
-  select(
-    AMOUNT_APPROVED__C, `GRANT_ID__C`, `AMOUNT_APPROVED__C`, `AWARD_LETTER_SENT__C`, `AWARD_LETTER_SIGNED__C`, 
-    `PAYMENT_STATUS__C`, `GRANT_START_DATE__C`, `PROGRAM__C`, `GRANT_END_DATE__C`, 
-    `GRANT_STATUS__C`, `GRANTED_INSTITUTION__C`, `DISBURSEMENT_REQUEST_AMOUNT__C`
-  ) %>% 
-  left_join(extract_c) %>% 
-  left_join(extract_alias_c, by = "GRANTED_INSTITUTION__C") %>% 
-  mutate(ID = coalesce(ID.x, ID.y)) %>% 
-  select(-ID.x, -ID.y) %>% 
-  left_join(match_c) %>% 
-  write_csv("new/2012/commits_2012.csv")
-
 # proposal -------------------------------
 proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
   rename(
     "NAME" = "Grant Title",
-    #"APPLYING_INSTITUTION_NAME__C" = "Institution Name",
-    "PROGRAM_COHORT_RECORD_TYPE__C" = "Type",
     "PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C" = "Proposal Summary",
     "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID"
   ) %>% 
@@ -102,7 +70,7 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   select(
     NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
     AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
-    GRANT_PERIOD_START__C, PROGRAM_COHORT_RECORD_TYPE__C, 
+    GRANT_PERIOD_START__C, 
     PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
     EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C
   ) %>% 
@@ -112,7 +80,7 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   select(-ID.x, -ID.y) %>% 
   rename("APPLYING_INSTITUTION__C" = "ID") %>% 
   left_join(match_p) %>% 
-  select( - `Zenn ID`) %>% 
+  select( - `Zenn ID`, APPLYING_INSTITUTION_NAME__C) %>% 
   unique()
 
 proposal_2012$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(proposal_2012$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, "[:cntrl:]", " ")
@@ -124,6 +92,7 @@ proposal_2012[is.na(proposal_2012)] <- " "
 proposal_2012 <- as.data.frame(proposal_2012)
 
 write_csv(proposal_2012, "new/2012/proposal_2012.csv")
+
 
 # team --------------------------
 team_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -139,6 +108,35 @@ team_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   ) %>% 
   left_join(match_p) %>% 
   write_csv("new/2012/team_2012.csv")
+
+# note_task -------------------------------------------------
+task_2012 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustainable_vision_grants_2012_post_award_notes.xlsx", 
+                        col_types = c("numeric", "text", "text", 
+                                      "text")) %>% 
+  set_names(c("Zenn ID", "Created Date", "Created by",	"Note")) %>% 
+  left_join(match) %>% 
+  rename("WHATID" = "Zenn ID",
+         "DESCRIPTION" = "Note") %>% 
+  mutate(STATUS = "Completed",
+         PRIORITY = "Normal",
+         TYPE = "Internal Note",
+         TASKSUBTYPE = "Call",
+         ACTIVITYDATE = as.Date(`Created Date`), 
+         SUBJECT = "Post Award Note--",
+         OWNER = ifelse(`Created by` == "Brenna Breeding", "00539000005UlQaAAK",
+                        ifelse(`Created by` == "Michael Norton", "00539000004pukIAAQ",
+                               ifelse(`Created by` == "Patricia Boynton", "00570000001K3bpAAC",
+                                      ifelse(`Created by` == "Rachel Agoglia", "00570000003QASWAA4",
+                                             "00570000004VlXPAA0"))
+                        )
+         )
+  ) %>% 
+  unite("SUBJECT", c(SUBJECT, `Created Date`), sep = "", remove = FALSE) %>% 
+  unite("SUBJECT", c(SUBJECT, `Created by`), sep = " ", remove = FALSE) %>% 
+  select(
+    WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
+  ) %>% 
+  write_csv("new/2012/note_task_2012.csv")
 
 # membership -----------------------------
 membership_2012_1a <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -189,33 +187,36 @@ membership_2012 <- merge(membership_2012_2, advisors) %>%
     PHONE_FORMULA__C, PROGRAM_TYPE_FORMULA__C, FIRST_NAME__C, ORGANIZATION__C,
     PROPOSAL_STATUS__C, LAST_NAME__C, TEAM_NAME_TEXT_ONLY_HIDDEN__C
   ) %>% 
-  write_csv("new/member_2012.csv")
+  write_csv("new/2012/member_2012.csv")
 ## note: status needs capitalization  - stri_trans_totitle()
 
-# task -------------------------------------------------
-task_2012 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustainable_vision_grants_2012_post_award_notes.xlsx", 
-                        col_types = c("numeric", "text", "text", 
-                                      "text")) %>% 
-  left_join(match) %>% 
-  rename("WHATID" = "Zenn ID",
-         "DESCRIPTION" = "Note") %>% 
-  mutate(STATUS = "Completed",
-         PRIORITY = "Normal",
-         TYPE = "Internal Note",
-         TASKSUBTYPE = "Call",
-         ACTIVITYDATE = as.Date(`Created Date`), 
-         SUBJECT = "Post Award Note--",
-         OWNER = ifelse(`Created by` == "Brenna Breeding", "00539000005UlQaAAK",
-                        ifelse(`Created by` == "Michael Norton", "00539000004pukIAAQ",
-                               ifelse(`Created by` == "Patricia Boynton", "00570000001K3bpAAC",
-                                      ifelse(`Created by` == "Rachel Agoglia", "00570000003QASWAA4",
-                                             "00570000004VlXPAA0"))
-                        )
-         )
+# commits ------------------
+commits_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
+  filter(`Application Status` == "funded") %>% 
+  rename(
+    "GRANT_ID__C" = "External Proposal ID", 
+    "GRANTED_INSTITUTION__C" = "Institution Name",
+    "AMOUNT_DISBURSED__C" = "Amount Disbursed",
+    "PROGRAM__C" = "Type"
   ) %>% 
-  unite("SUBJECT", c(SUBJECT, `Created Date`), sep = "", remove = FALSE) %>% 
-  unite("SUBJECT", c(SUBJECT, `Created by`), sep = " ", remove = FALSE) %>% 
+  mutate(
+    "DISBURSEMENT_REQUEST_AMOUNT__C" = as.double(AMOUNT_DISBURSED__C),
+    "GRANT_STATUS__C" = stri_trans_totitle(`Application Status`),
+    "AWARD_LETTER_SENT__C" = as.Date(`Grant Letter Sent`),
+    "AWARD_LETTER_SIGNED__C" = as.Date(`Grant Letter Signed`),
+    "GRANT_START_DATE__C" = as.Date(`Actual Period Begin`),
+    "GRANT_END_DATE__C" = as.Date(`Actual Period End`),
+    "PAYMENT_STATUS__C" = "Paid", 
+    "AMOUNT_APPROVED__C" = as.double(`Amount Approved`)
+  ) %>% 
   select(
-    WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
+    AMOUNT_APPROVED__C, `GRANT_ID__C`, `AMOUNT_APPROVED__C`, `AWARD_LETTER_SENT__C`, `AWARD_LETTER_SIGNED__C`, 
+    `PAYMENT_STATUS__C`, `GRANT_START_DATE__C`, `PROGRAM__C`, `GRANT_END_DATE__C`, 
+    `GRANT_STATUS__C`, `GRANTED_INSTITUTION__C`, `DISBURSEMENT_REQUEST_AMOUNT__C`
   ) %>% 
-  write_csv("new/note_task_2012.csv")
+  left_join(extract_c) %>% 
+  left_join(extract_alias_c, by = "GRANTED_INSTITUTION__C") %>% 
+  mutate(ID = coalesce(ID.x, ID.y)) %>% 
+  select(-ID.x, -ID.y) %>% 
+  left_join(match_c) %>% 
+  write_csv("new/2012/commits_2012.csv")
