@@ -13,7 +13,9 @@ program_cohort <- data.frame(
     "a2C39000002zYtIEAU",
     "a2C39000002zYtNEAU",
     "a2C39000002zYt4EAE"
-  )
+  ), 
+  "RECORDTYPEID" = "01239000000Ap02AAC",
+  "PROPOSAL_FUNDER__C" = "The Lemelson Foundation"
 )
 
 ## for commit
@@ -90,15 +92,11 @@ commits_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gran
 proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
   rename(
     "NAME" = "Grant Title",
-    #"APPLYING_INSTITUTION_NAME__C" = "Institution Name",
-    "PROGRAM_COHORT_RECORD_TYPE__C" = "Type",
     "PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C" = "Proposal Summary",
     "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID"
   ) %>% 
   mutate(
     "year" = as.numeric(format(as.Date(`Date Created`),'%Y')),
-    "RECORDTYPEID" = "01239000000Ap02AAC",
-    "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
     "STATUS__C" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
     "PROPOSAL_NAME_LONG_VERSION__C" = as.character(NAME),
     "DATE_CREATED__C" = as.Date(`Date Created`),
@@ -113,11 +111,11 @@ proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
                                                    ifelse(`Institution Name` == "Arizona State University at the Tempe Campus", "Arizona State University", `Institution Name`)))
   ) %>% 
   select(
-    year, NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
+    year, NAME, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
     AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
-    GRANT_PERIOD_START__C, PROGRAM_COHORT_RECORD_TYPE__C, 
+    GRANT_PERIOD_START__C, 
     PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
-    EXTERNAL_PROPOSAL_ID__C, PROPOSAL_FUNDER__C
+    EXTERNAL_PROPOSAL_ID__C
   ) %>% 
   left_join(extract_p) %>% 
   left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 

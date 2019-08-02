@@ -14,7 +14,9 @@ program_cohort <- data.frame(
     "a2C39000002zYtIEAU",
     "a2C39000002zYtNEAU",
     "a2C39000002zYt4EAE"
-  )
+  ), 
+  "RECORDTYPEID" = "01239000000Ap02AAC",
+  "PROPOSAL_FUNDER__C" = "The Lemelson Foundation"
 )
 
 ## for commit
@@ -57,9 +59,6 @@ match_p <- match %>%
   rename("NAME" = "Grant Title") %>% 
   select(-`Institution Name`)
 
-
-
-
 # 2012  --------------
 # proposal 
 proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -70,7 +69,6 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   ) %>% 
   mutate(
     "year" = as.numeric(format(as.Date(`Date Created`),'%Y')),
-    "RECORDTYPEID" = "01239000000Ap02AAC", #use join! 
     "STATUS__C" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
     "PROPOSAL_NAME_LONG_VERSION__C" = as.character(NAME),
     "DATE_CREATED__C" = as.Date(`Date Created`),
@@ -80,16 +78,14 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "AMOUNT_REQUESTED__C" = as.double(`Amount Requested`),
     "ZENN_ID__C" = as.double(`Zenn ID`),
     "AWARD_AMOUNT__C" = as.double(`Amount Approved`), 
-    "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
-    "PROGRAM_COHORT_RECORD_TYPE__C" = "Type",
     "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` == "University of Oklahoma", "University of Oklahoma Norman Campus",`Institution Name`)
   ) %>% 
   select(
-    year, NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
+    year, NAME, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
     AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
-    GRANT_PERIOD_START__C,PROGRAM_COHORT_RECORD_TYPE__C, 
+    GRANT_PERIOD_START__C, 
     PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
-    EXTERNAL_PROPOSAL_ID__C, PROPOSAL_FUNDER__C
+    EXTERNAL_PROPOSAL_ID__C
   ) %>% 
   filter(is.na(APPLYING_INSTITUTION_NAME__C) == FALSE) %>% 
   left_join(extract_p) %>% 
@@ -156,6 +152,7 @@ task_2012 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
   write_csv("new/2012/note_task_2012.csv")
 
 
+
 # 2011 -------------------------------
 # proposal 
 proposal_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2011_proposals.xlsx") %>% 
@@ -165,7 +162,7 @@ proposal_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID"
   ) %>% 
   mutate(
-    "RECORDTYPEID" = "01239000000Ap02AAC",
+    "year" = as.numeric(format(as.Date(`Date Created`),'%Y')),
     "STATUS__C" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
     "PROPOSAL_NAME_LONG_VERSION__C" = as.character(NAME),
     "DATE_CREATED__C" = as.Date(`Date Created`),
@@ -175,18 +172,17 @@ proposal_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "AMOUNT_REQUESTED__C" = as.double(`Amount Requested`),
     "ZENN_ID__C" = as.double(`Zenn ID`),
     "AWARD_AMOUNT__C" = as.double(`Amount Approved`), 
-    "PROGRAM_COHORT__C" = "a2C39000002zYt4EAE",
-    "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
-    "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` %in% c("University of St. Thomas", "University of St Thomas"), "University of St Thomas (Saint Paul, Minnesota)", 
-                                            ifelse(`Institution Name` == "Indiana University Northwest", "Indiana University-Northwest",
-                                                   ifelse(`Institution Name` == "University of Maryland, Baltimore County", "University of Maryland-Baltimore County",
-                                                          `Institution Name`)))) %>% 
-  select(
-    NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
-    AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
-    GRANT_PERIOD_START__C, 
-    PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
-    EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C
+    "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` == "University of St. Thomas", "University of St Thomas (Saint Paul, Minnesota)",
+                                            ifelse(`Institution Name` == "University of St Thomas", "University of St Thomas (Saint Paul, Minnesota)",
+                                                   ifelse(`Institution Name` == "Indiana University Northwest", "Indiana University-Northwest",
+                                                          ifelse(`Institution Name` == "University of Maryland, Baltimore County", "University of Maryland-Baltimore County", 
+                                                                 `Institution Name`))))
+  ) %>% 
+  select(year, NAME, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
+         AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
+         GRANT_PERIOD_START__C, 
+         PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
+         EXTERNAL_PROPOSAL_ID__C
   ) %>% 
   left_join(extract_p) %>% 
   left_join(extract_alias_p, by = "APPLYING_INSTITUTION_NAME__C") %>% 
@@ -194,7 +190,8 @@ proposal_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   select(-ID.x, -ID.y) %>% 
   rename("APPLYING_INSTITUTION__C" = "ID") %>% 
   left_join(match_p) %>% 
-  select( - `Zenn ID`, APPLYING_INSTITUTION_NAME__C) %>% 
+  left_join(program_cohort) %>% 
+  select( - `Zenn ID`, -year) %>% 
   unique()
 
 proposal_2011$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(proposal_2011$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, "[:cntrl:]", " ")
