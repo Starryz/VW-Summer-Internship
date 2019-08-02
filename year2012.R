@@ -5,6 +5,18 @@ library(stringi)
 library(readr)
 library(data.table)
 
+# program_cohort__c
+program_cohort <- data.frame(
+  "year" = 2009:2013,
+  "PROGRAM_COHORT__C" = c(
+    "a2C39000002zYtDEAU",
+    "a2C39000002zYt9EAE",
+    "a2C39000002zYtIEAU",
+    "a2C39000002zYtNEAU",
+    "a2C39000002zYt4EAE"
+  )
+)
+
 ## for commit
 extract_c <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Organization_extract.csv") %>% 
   rename("GRANTED_INSTITUTION__C" = "NAME") %>% 
@@ -47,6 +59,7 @@ match_p <- match %>%
 
 
 
+
 # 2012  --------------
 # proposal 
 proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -56,6 +69,7 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID"
   ) %>% 
   mutate(
+    "year" = as.numeric(format(as.Date(`Date Created`),'%Y')),
     "RECORDTYPEID" = "01239000000Ap02AAC", #use join! 
     "STATUS__C" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
     "PROPOSAL_NAME_LONG_VERSION__C" = as.character(NAME),
@@ -66,17 +80,16 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
     "AMOUNT_REQUESTED__C" = as.double(`Amount Requested`),
     "ZENN_ID__C" = as.double(`Zenn ID`),
     "AWARD_AMOUNT__C" = as.double(`Amount Approved`), 
-    "PROGRAM_COHORT__C" = "a2C39000002zYt4EAE",
     "PROPOSAL_FUNDER__C" = "The Lemelson Foundation",
     "PROGRAM_COHORT_RECORD_TYPE__C" = "Type",
     "APPLYING_INSTITUTION_NAME__C" = ifelse(`Institution Name` == "University of Oklahoma", "University of Oklahoma Norman Campus",`Institution Name`)
   ) %>% 
   select(
-    NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
+    year, NAME, RECORDTYPEID, AMOUNT_REQUESTED__C, PROPOSAL_NAME_LONG_VERSION__C, APPLYING_INSTITUTION_NAME__C,
     AWARD_AMOUNT__C, DATE_CREATED__C, DATE_SUBMITTED__C, GRANT_PERIOD_END__C, 
     GRANT_PERIOD_START__C,PROGRAM_COHORT_RECORD_TYPE__C, 
     PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, ZENN_ID__C, STATUS__C,
-    EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, PROPOSAL_FUNDER__C
+    EXTERNAL_PROPOSAL_ID__C, PROPOSAL_FUNDER__C
   ) %>% 
   filter(is.na(APPLYING_INSTITUTION_NAME__C) == FALSE) %>% 
   left_join(extract_p) %>% 
@@ -84,17 +97,16 @@ proposal_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   mutate(ID = coalesce(ID.x, ID.y)) %>% 
   select(-ID.x, -ID.y) %>% 
   rename("APPLYING_INSTITUTION__C" = "ID") %>% 
-  # select(-'Zenn ID') %>%  ??????????
   left_join(match_p) %>% 
+  left_join(program_cohort) %>% 
+  select( - `Zenn ID`, -year) %>% 
   unique()
 
 proposal_2012$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C <- str_replace_all(proposal_2012$PROJECT_DESCRIPTION_PROPOSAL_ABSTRACT__C, "[:cntrl:]", " ")
 
-#str_remove_all("\u0093systems\u0094", "[[\\[u]+[0-9]*]]")
-
 proposal_2012 <- sapply(proposal_2012, as.character)
 proposal_2012[is.na(proposal_2012)] <- " "
-proposal_2012 <- as.data.frame(proposal_2012)
+proposal_2012 <- as.data.frame(proposal_2012) 
 
 write_csv(proposal_2012, "new/2012/proposal_2012.csv")
 
