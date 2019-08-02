@@ -57,6 +57,11 @@ match_p <- match %>%
   rename("NAME" = "Grant Title") %>% 
   select(-`Institution Name`)
 
+# team ID
+team_id <- read_csv("team_id.csv") %>% 
+  rename("Grant Title" = "Team: Team Name",
+         "TEAMID" = "Team: ID")
+
 # commits ------------------
 commits_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
   filter(`Application Status` == "funded") %>% 
