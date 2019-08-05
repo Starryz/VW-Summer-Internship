@@ -125,8 +125,10 @@ team_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   write_csv("new/team_2013.csv")
 
 # membership -----------------------------
-advisors2 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_advisors.xlsx") %>% 
-  select(`Zenn ID`, `Team Role`)
+advisors <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_advisors.xlsx") %>% 
+  select(`Zenn ID`, `Team Role`, Email) %>% 
+  rename("ZENN_ID__C" = "Zenn ID",
+         "ROLE__C" = "Team Role")
 
 proposal_2013_narrow <- proposal_2013 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
@@ -152,6 +154,12 @@ membership <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
   ) %>% 
+  right_join(advisors) %>% 
+  select(
+    ZENN_ID__C, 
+    TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
+    ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
+  )
   
   
 
