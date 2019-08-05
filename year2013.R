@@ -58,43 +58,11 @@ match_p <- match %>%
   select(-`Institution Name`)
 
 # team ID
-team_id <- read_csv("team_id.csv") %>% 
+teamid <- read_csv("teamid.csv") %>% 
   rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "Team: Team Name",
-         "TEAMID" = "Team: ID")
-
-team_id$TEAM_NAME_TEXT_ONLY_HIDDEN__C <- str_replace_all(team_id$TEAM_NAME_TEXT_ONLY_HIDDEN__C, '\"', "")
-
-
-# commits ------------------
-commits_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
-  filter(`Application Status` == "funded") %>% 
-  rename(
-    "GRANT_ID__C" = "External Proposal ID", 
-    "GRANTED_INSTITUTION__C" = "Institution Name",
-    "AMOUNT_DISBURSED__C" = "Amount Disbursed",
-    "PROGRAM__C" = "Type"
-  ) %>% 
-  mutate(
-    "DISBURSEMENT_REQUEST_AMOUNT__C" = as.double(AMOUNT_DISBURSED__C),
-    "GRANT_STATUS__C" = stri_trans_totitle(`Application Status`),
-    "AWARD_LETTER_SENT__C" = as.Date(`Grant Letter Sent`),
-    "AWARD_LETTER_SIGNED__C" = as.Date(`Grant Letter Signed`),
-    "GRANT_START_DATE__C" = as.Date(`Actual Period Begin`),
-    "GRANT_END_DATE__C" = as.Date(`Actual Period End`),
-    "PAYMENT_STATUS__C" = "Paid", 
-    "AMOUNT_APPROVED__C" = as.double(`Amount Approved`)
-  ) %>% 
-  select(
-    AMOUNT_APPROVED__C, `GRANT_ID__C`, `AMOUNT_APPROVED__C`, `AWARD_LETTER_SENT__C`, `AWARD_LETTER_SIGNED__C`, 
-    `PAYMENT_STATUS__C`, `GRANT_START_DATE__C`, `PROGRAM__C`, `GRANT_END_DATE__C`, 
-    `GRANT_STATUS__C`, `GRANTED_INSTITUTION__C`, `DISBURSEMENT_REQUEST_AMOUNT__C`
-  ) %>% 
-  left_join(extract_c) %>% 
-  left_join(extract_alias_c, by = "GRANTED_INSTITUTION__C") %>% 
-  mutate(ID = coalesce(ID.x, ID.y)) %>% 
-  select(-ID.x, -ID.y) %>% 
-  left_join(match_c) %>% 
-  write_csv("new/commits_2013.csv")
+         "TEAMID" = "Team: ID",
+         "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID", 
+         "PROPOSAL__C" = "Proposal: ID")
 
 # proposal -------------------------------
 proposal_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
@@ -154,10 +122,41 @@ team_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   select(
     NAME, RECORDTYPEID, ALIAS__C
   ) %>% 
-  left_join(match_p) %>% 
   write_csv("new/team_2013.csv")
 
 # membership -----------------------------
+advisors2 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_advisors.xlsx") %>% 
+  select(`Zenn ID`, `Team Role`)
+
+proposal_2013_narrow <- proposal_2013 %>% 
+  select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
+  rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "NAME") %>% 
+  left_join(teamid, by = "EXTERNAL_PROPOSAL_ID__C")
+  
+membership <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
+  select(
+    `Zenn ID`, `External Proposal ID`, `Application Status`,
+    `Grant Title`, `Institution ID`, `Date Application Submitted`,
+    `Actual Period Begin`, `Actual Period End`
+  ) %>% 
+  mutate("Application Status" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
+         "Actual Period Begin" = ifelse(`Application Status` == "Funded", `Actual Period Begin`, `Date Application Submitted`),
+         "Actual Period End" = ifelse(`Application Status` == "Funded", `Actual Period End`, `Date Application Submitted`), 
+         "STATUS__C" = ifelse(`Application Status` == "Funded", "Completed", "Inactive")
+  ) %>%
+  rename("ZENN_ID__C" = "Zenn ID") %>% 
+  left_join(proposal_2013_narrow) %>% 
+  rename(
+    "TEAM__C" = "TEAMID",
+    "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
+    "START_DATE__C" = "Actual Period Begin",
+    "END_DATE__C" = "Actual Period End"
+  ) %>% 
+  
+  
+
+# ignore ------------
+
 membership_2013_1a <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
   mutate(
     "START_DATE__C" = as.Date(`Actual Period Begin`),
@@ -210,7 +209,7 @@ membership_2013 <- merge(membership_2013_2, advisors) %>%
 membership_2013$TEAM_NAME_TEXT_ONLY_HIDDEN__C <- str_replace_all(membership_2013$TEAM_NAME_TEXT_ONLY_HIDDEN__C, '\"', "")
 
 membership_2013 <- membership_2013 %>% 
-  left_join(team_id) %>% 
+  left_join(teamid) %>% 
   select(-START_DATE__C, END_DATE__C)
 
   
