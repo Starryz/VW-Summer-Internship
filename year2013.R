@@ -2,6 +2,7 @@ library(readxl)
 library(tidyverse)
 library(stringi)
 library(readr)
+library(sqldf)
 
 # help match --------------
 # program_cohort__c
@@ -125,10 +126,20 @@ team_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   write_csv("new/team_2013.csv")
 
 # membership -----------------------------
+contacts <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Contact_Extract.csv") %>% 
+  select(ID, EMAIL, NPE01__ALTERNATEEMAIL__C, NPE01__HOMEEMAIL__C,
+         NPE01__WORKEMAIL__C, PREVIOUS_EMAIL_ADDRESSES__C, BKUP_EMAIL_ADDRESS__C)
+
+contacts_1 <- contacts %>% 
+  select(ID, EMAIL)
+
+contacts_1
+
 advisors <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_advisors.xlsx") %>% 
   select(`Zenn ID`, `Team Role`, Email) %>% 
   rename("ZENN_ID__C" = "Zenn ID",
-         "ROLE__C" = "Team Role")
+         "ROLE__C" = "Team Role",
+         "EMAIL" = "Email")
 
 proposal_2013_narrow <- proposal_2013 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
@@ -156,10 +167,19 @@ membership <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants
   ) %>% 
   right_join(advisors) %>% 
   select(
-    ZENN_ID__C, 
+    EMAIL, ZENN_ID__C, 
     TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
-  )
+  ) %>% 
+  left_join(contacts, by = "EMAIL")
+
+df_membership <- sqldf('select membership.*, contacts.* from membership left join contacts on membership.EMAIL = contacts.EMAIL') %>% 
+  
+
+#df_membership_2 <- sqldf('select df_membership.*, contacts.* from df_membership left join contacts on df_membership.EMAIL = contacts.NPE01__ALTERNATEEMAIL__C')
+#df_membership_3 <- sqldf('select df_membership_2.*, contacts.* from df_membership_2 left join contacts on df_membership_2.EMAIL = contacts.NPE01__HOMEEMAIL__C')
+
+  #left_join(contacts_1, by = "EMAIL")
   
   
 
