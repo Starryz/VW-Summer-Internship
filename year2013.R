@@ -59,8 +59,11 @@ match_p <- match %>%
 
 # team ID
 team_id <- read_csv("team_id.csv") %>% 
-  rename("Grant Title" = "Team: Team Name",
+  rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "Team: Team Name",
          "TEAMID" = "Team: ID")
+
+team_id$TEAM_NAME_TEXT_ONLY_HIDDEN__C <- str_replace_all(team_id$TEAM_NAME_TEXT_ONLY_HIDDEN__C, '\"', "")
+
 
 # commits ------------------
 commits_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
@@ -202,7 +205,15 @@ membership_2013 <- merge(membership_2013_2, advisors) %>%
     ROLE__C, START_DATE__C, END_DATE__C, FULL_NAME__C, EMAIL_FORMULA__C, 
     PHONE_FORMULA__C, PROGRAM_TYPE_FORMULA__C, FIRST_NAME__C, ORGANIZATION__C,
     PROPOSAL_STATUS__C, LAST_NAME__C, TEAM_NAME_TEXT_ONLY_HIDDEN__C
-  ) %>% 
+  ) 
+
+membership_2013$TEAM_NAME_TEXT_ONLY_HIDDEN__C <- str_replace_all(membership_2013$TEAM_NAME_TEXT_ONLY_HIDDEN__C, '\"', "")
+
+membership_2013 <- membership_2013 %>% 
+  left_join(team_id) %>% 
+  select(-START_DATE__C, END_DATE__C)
+
+  
   write_csv("new/member_2013.csv")
 ## note: status needs capitalization  - stri_trans_totitle()
 
