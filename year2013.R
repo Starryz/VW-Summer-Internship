@@ -133,8 +133,6 @@ contacts <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforc
 contacts_1 <- contacts %>% 
   select(ID, EMAIL)
 
-contacts_1
-
 advisors <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_advisors.xlsx") %>% 
   select(`Zenn ID`, `Team Role`, Email) %>% 
   rename("ZENN_ID__C" = "Zenn ID",
@@ -159,7 +157,7 @@ membership <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants
   ) %>%
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2013_narrow) %>% 
-  rename(
+  rename(     
     "TEAM__C" = "TEAMID",
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
@@ -171,18 +169,11 @@ membership <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants
     TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
   ) %>% 
-  left_join(contacts, by = "EMAIL")
+  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>% 
+  left_join(contacts_1)
 
 df_membership <- sqldf('select membership.*, contacts.* from membership left join contacts on membership.EMAIL = contacts.EMAIL') %>% 
   
-
-#df_membership_2 <- sqldf('select df_membership.*, contacts.* from df_membership left join contacts on df_membership.EMAIL = contacts.NPE01__ALTERNATEEMAIL__C')
-#df_membership_3 <- sqldf('select df_membership_2.*, contacts.* from df_membership_2 left join contacts on df_membership_2.EMAIL = contacts.NPE01__HOMEEMAIL__C')
-
-  #left_join(contacts_1, by = "EMAIL")
-  
-  
-
 # ignore ------------
 
 membership_2013_1a <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
