@@ -60,7 +60,7 @@ match_p <- match %>%
 
 # team ID
 teamid <- read_csv("teamid.csv") %>% 
-  rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "Team: Team Name",
+  rename(
          "TEAMID" = "Team: ID",
          "EXTERNAL_PROPOSAL_ID__C" = "External Proposal ID", 
          "PROPOSAL__C" = "Proposal: ID")
@@ -144,7 +144,7 @@ proposal_2013_narrow <- proposal_2013 %>%
   rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "NAME") %>% 
   left_join(teamid, by = "EXTERNAL_PROPOSAL_ID__C")
   
-membership <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
+membership_2013 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2013_proposals.xlsx") %>% 
   select(
     `Zenn ID`, `External Proposal ID`, `Application Status`,
     `Grant Title`, `Institution ID`, `Date Application Submitted`,
@@ -170,7 +170,10 @@ membership <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
   ) %>% 
   mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>% 
-  left_join(contacts_1)
+  left_join(contacts_1) %>% 
+  rename("MEMBER__C" = "ID") %>% 
+  na.omit() %>% 
+  write_csv("new/member_2013.csv")
 
 df_membership <- sqldf('select membership.*, contacts.* from membership left join contacts on membership.EMAIL = contacts.EMAIL') %>% 
   
