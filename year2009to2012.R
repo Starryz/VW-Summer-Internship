@@ -312,6 +312,57 @@ task_2011 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
   ) %>% 
   write_csv("new/2011/note_task_2011.csv")
 
+# memebrship 
+advisors_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2011_advisors.xlsx") %>% 
+  select(`Zenn ID`, `Team Role`, Email) %>% 
+  rename("ZENN_ID__C" = "Zenn ID",
+         "ROLE__C" = "Team Role",
+         "EMAIL" = "Email")
+
+teamid_2011 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2011/proposal_2011_extract.csv") %>% 
+  select(ID, ZENN_ID__C, TEAM__C) %>% 
+  rename("TEAMID" = "ID", 
+         "PROPOSAL__C" = "TEAM__C") %>% 
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+
+proposal_2011_narrow <- proposal_2011 %>% 
+    select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
+  rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "NAME") %>% 
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  left_join(teamid_2011, by = "ZENN_ID__C")
+
+membership_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2011_proposals.xlsx") %>% 
+  select(
+    `Zenn ID`, `External Proposal ID`, `Application Status`,
+    `Grant Title`, `Institution ID`, `Date Application Submitted`,
+    `Actual Period Begin`, `Actual Period End`
+  ) %>% 
+  mutate("Application Status" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
+         "Actual Period Begin" = ifelse(`Application Status` == "Funded", `Actual Period Begin`, `Date Application Submitted`),
+         "Actual Period End" = ifelse(`Application Status` == "Funded", `Actual Period End`, `Date Application Submitted`), 
+         "STATUS__C" = ifelse(`Application Status` == "Funded", "Completed", "Inactive")
+  ) %>%
+  rename("ZENN_ID__C" = "Zenn ID") %>% 
+  left_join(proposal_2011_narrow) %>% 
+  rename(     
+    "TEAM__C" = "TEAMID",
+    "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
+    "START_DATE__C" = "Actual Period Begin",
+    "END_DATE__C" = "Actual Period End"
+  ) %>% 
+  right_join(advisors_2011) %>% 
+  select(
+    EMAIL, ZENN_ID__C, 
+    TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
+    ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
+  ) %>% 
+  mutate(EMAIL = tolower(EMAIL),
+         ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>%
+  na.omit() %>% 
+  left_join(contacts_1, by = "EMAIL") %>% 
+  rename("MEMBER__C" = "ID") %>% 
+  na.omit() %>% 
+  write_csv("new/2011/member_2011.csv")
 
 # 2010 --------------
 # proposal 
@@ -409,6 +460,58 @@ task_2010 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
   ) %>% 
   write_csv("new/2010/note_task_2010.csv")
 
+# memebrship 
+advisors_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2010_advisors.xlsx") %>% 
+  select(`Zenn ID`, `Team Role`, Email) %>% 
+  rename("ZENN_ID__C" = "Zenn ID",
+         "ROLE__C" = "Team Role",
+         "EMAIL" = "Email")
+
+teamid_2010 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2010/proposal_2010_extract.csv") %>% 
+  select(ID, ZENN_ID__C, TEAM__C) %>% 
+  rename("TEAMID" = "ID", 
+         "PROPOSAL__C" = "TEAM__C") %>% 
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+
+proposal_2010_narrow <- proposal_2010 %>% 
+  select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
+  rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "NAME") %>% 
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  left_join(teamid_2010, by = "ZENN_ID__C")
+
+membership_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2010_proposals.xlsx") %>% 
+  select(
+    `Zenn ID`, `External Proposal ID`, `Application Status`,
+    `Grant Title`, `Institution ID`, `Date Application Submitted`,
+    `Actual Period Begin`, `Actual Period End`
+  ) %>% 
+  mutate("Application Status" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
+         "Actual Period Begin" = ifelse(`Application Status` == "Funded", `Actual Period Begin`, `Date Application Submitted`),
+         "Actual Period End" = ifelse(`Application Status` == "Funded", `Actual Period End`, `Date Application Submitted`), 
+         "STATUS__C" = ifelse(`Application Status` == "Funded", "Completed", "Inactive")
+  ) %>%
+  rename("ZENN_ID__C" = "Zenn ID") %>% 
+  left_join(proposal_2010_narrow) %>% 
+  rename(     
+    "TEAM__C" = "TEAMID",
+    "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
+    "START_DATE__C" = "Actual Period Begin",
+    "END_DATE__C" = "Actual Period End"
+  ) %>% 
+  right_join(advisors_2010) %>% 
+  select(
+    EMAIL, ZENN_ID__C, 
+    TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
+    ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
+  ) %>% 
+  mutate(EMAIL = tolower(EMAIL),
+         ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>%
+  na.omit() %>% 
+  left_join(contacts_1, by = "EMAIL") %>% 
+  rename("MEMBER__C" = "ID") %>% 
+  na.omit() %>% 
+  write_csv("new/2010/member_2010.csv")
+
 # 2009 ------------------
 # proposal 
 proposal_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2009_proposals.xlsx") %>% 
@@ -503,3 +606,55 @@ task_2009 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
     WHATID, ACTIVITYDATE, `Created by`, DESCRIPTION, TYPE, STATUS, PRIORITY, OWNER, SUBJECT
   ) %>% 
   write_csv("new/2009/note_task_2009.csv")
+
+# memebrship 
+advisors_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2009_advisors.xlsx") %>% 
+  select(`Zenn ID`, `Team Role`, Email) %>% 
+  rename("ZENN_ID__C" = "Zenn ID",
+         "ROLE__C" = "Team Role",
+         "EMAIL" = "Email")
+
+teamid_2009 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2009/proposal_2009_extract.csv") %>% 
+  select(ID, ZENN_ID__C, TEAM__C) %>% 
+  rename("TEAMID" = "ID", 
+         "PROPOSAL__C" = "TEAM__C") %>% 
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+
+proposal_2009_narrow <- proposal_2009 %>% 
+  select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
+  rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "NAME") %>% 
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  left_join(teamid_2009, by = "ZENN_ID__C")
+
+membership_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2009_proposals.xlsx") %>% 
+  select(
+    `Zenn ID`, `External Proposal ID`, `Application Status`,
+    `Grant Title`, `Institution ID`, `Date Application Submitted`,
+    `Actual Period Begin`, `Actual Period End`
+  ) %>% 
+  mutate("Application Status" = ifelse(`Application Status` == "invite resubmit", "Invited Resubmit", stri_trans_totitle(`Application Status`)),
+         "Actual Period Begin" = ifelse(`Application Status` == "Funded", `Actual Period Begin`, `Date Application Submitted`),
+         "Actual Period End" = ifelse(`Application Status` == "Funded", `Actual Period End`, `Date Application Submitted`), 
+         "STATUS__C" = ifelse(`Application Status` == "Funded", "Completed", "Inactive")
+  ) %>%
+  rename("ZENN_ID__C" = "Zenn ID") %>% 
+  left_join(proposal_2009_narrow) %>% 
+  rename(     
+    "TEAM__C" = "TEAMID",
+    "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
+    "START_DATE__C" = "Actual Period Begin",
+    "END_DATE__C" = "Actual Period End"
+  ) %>% 
+  right_join(advisors_2009) %>% 
+  select(
+    EMAIL, ZENN_ID__C, 
+    TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
+    ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
+  ) %>% 
+  mutate(EMAIL = tolower(EMAIL),
+         ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>%
+  na.omit() %>% 
+  left_join(contacts_1, by = "EMAIL") %>% 
+  rename("MEMBER__C" = "ID") %>% 
+  na.omit() %>% 
+  write_csv("new/2009/member_2009.csv")
