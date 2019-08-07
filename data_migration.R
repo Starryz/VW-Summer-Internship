@@ -218,8 +218,7 @@ membership_2013_1a <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visio
   ) %>% 
   select(
     START_DATE__C, END_DATE__C, TEAM_NAME_TEXT_ONLY_HIDDEN__C, PROPOSAL_STATUS__C
-  ) %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% %>% 
-
+  ) %>% 
 membership_2013_1b <- proposal_2013 %>% 
   select(NAME, ZENN_ID__C) %>% 
   rename(
