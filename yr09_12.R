@@ -79,6 +79,46 @@ match_p_2011 <- match_2011 %>%
   rename("NAME" = "Grant Title") %>% 
   select(-`Institution Name`)
 
+match_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2010_proposals.xlsx", 
+                         col_types = c("numeric", "text", "text", 
+                                       "text", "text", "numeric", "text", 
+                                       "text", "text", "text", "text", "text", 
+                                       "text", "text", "numeric", "text", 
+                                       "numeric", "text", "text", "text", 
+                                       "numeric", "text", "text", "text", 
+                                       "numeric", "text", "text", "numeric", 
+                                       "text", "text", "numeric", "text", 
+                                       "text", "text", "text", "text")) %>% 
+  select(`Zenn ID`, `Grant Title`, `Institution Name`)
+
+match_c_2010 <- match_2010 %>% 
+  rename("GRANTED_INSTITUTION__C" = "Institution Name") %>% 
+  select(-`Grant Title`)
+
+match_p_2010 <- match_2010 %>% 
+  rename("NAME" = "Grant Title") %>% 
+  select(-`Institution Name`)
+
+match_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2009_proposals.xlsx", 
+                         col_types = c("numeric", "text", "text", 
+                                       "text", "text", "numeric", "text", 
+                                       "text", "text", "text", "text", "text", 
+                                       "text", "text", "numeric", "text", 
+                                       "numeric", "text", "text", "text", 
+                                       "numeric", "text", "text", "text", 
+                                       "numeric", "text", "text", "numeric", 
+                                       "text", "text", "numeric", "text", 
+                                       "text", "text", "text", "text")) %>% 
+  select(`Zenn ID`, `Grant Title`, `Institution Name`)
+
+match_c_2009 <- match_2009 %>% 
+  rename("GRANTED_INSTITUTION__C" = "Institution Name") %>% 
+  select(-`Grant Title`)
+
+match_p_2009 <- match_2009 %>% 
+  rename("NAME" = "Grant Title") %>% 
+  select(-`Institution Name`)
+
 # for membership match
 contacts <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/salesforce_examples/Contact_Extract.csv") %>% 
   select(ID, EMAIL, NPE01__ALTERNATEEMAIL__C, NPE01__HOMEEMAIL__C,
@@ -550,7 +590,7 @@ proposal_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   mutate(ID = coalesce(ID.x, ID.y)) %>% 
   select(-ID.x, -ID.y) %>% 
   rename("APPLYING_INSTITUTION__C" = "ID") %>% 
-  left_join(match_p) %>% 
+  left_join(match_p_2010) %>% 
   left_join(program_cohort) %>% 
   select( - `Zenn ID`, -year) %>% 
   unique()
@@ -576,7 +616,7 @@ team_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   select(
     NAME, RECORDTYPEID, ALIAS__C
   ) %>% 
-  left_join(match_p) %>% 
+  left_join(match_p_2010) %>% 
   write_csv("new/2010/team_2010.csv")
 
 # note_task 
@@ -584,7 +624,7 @@ task_2010 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
                         col_types = c("numeric", "text", "text", 
                                       "text")) %>% 
   set_names(c("Zenn ID", "Created Date", "Created by",	"Note")) %>% 
-  left_join(match) %>% 
+  left_join(match_2010) %>% 
   rename("WHATID" = "Zenn ID",
          "DESCRIPTION" = "Note") %>% 
   mutate(STATUS = "Completed",
@@ -723,7 +763,7 @@ membership_2010_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) 
 
 no_id_2010 <- dplyr::setdiff(membership_2010_big, membership_2010_small) %>% 
-  left_join(advisors_full) %>% 
+  left_join(advisors_full_2010) %>% 
   write_csv("new/2010/no_id_2010.csv")
 
 # 2009 ------------------
@@ -762,7 +802,7 @@ proposal_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_gra
   mutate(ID = coalesce(ID.x, ID.y)) %>% 
   select(-ID.x, -ID.y) %>% 
   rename("APPLYING_INSTITUTION__C" = "ID") %>% 
-  left_join(match_p) %>% 
+  left_join(match_p_2009) %>% 
   left_join(program_cohort) %>% 
   select( - `Zenn ID`, -year) %>% 
   unique()
@@ -788,7 +828,7 @@ team_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_
   select(
     NAME, RECORDTYPEID, ALIAS__C
   ) %>% 
-  left_join(match_p) %>% 
+  left_join(match_p_2009) %>% 
   write_csv("new/2009/team_2009.csv")
 
 # note_task 
@@ -796,7 +836,7 @@ task_2009 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
                         col_types = c("numeric", "text", "text", 
                                       "text")) %>% 
   set_names(c("Zenn ID", "Created Date", "Created by",	"Note")) %>% 
-  left_join(match) %>% 
+  left_join(match_2009) %>% 
   rename("WHATID" = "Zenn ID",
          "DESCRIPTION" = "Note") %>% 
   mutate(STATUS = "Completed",
