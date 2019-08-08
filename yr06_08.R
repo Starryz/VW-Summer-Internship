@@ -435,8 +435,7 @@ task_2007 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
 
 teamid_2007 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/new_dataset_migrate/2007/proposal_2007_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
-  rename("TEAMID" = "ID", 
-         "PROPOSAL__C" = "TEAM__C") %>% 
+  rename("PROPOSAL__C" = "ID") %>% 
   mutate(ZENN_ID__C = as.character(ZENN_ID__C))
 
 proposal_2007_narrow <- proposal_2007 %>% 
@@ -653,8 +652,7 @@ task_2008 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
 
 teamid_2008 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/new_dataset_migrate/2008/proposal_2008_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
-  rename("TEAMID" = "ID", 
-         "PROPOSAL__C" = "TEAM__C") %>% 
+  rename("PROPOSAL__C" = "ID") %>% 
   mutate(ZENN_ID__C = as.character(ZENN_ID__C))
 
 proposal_2008_narrow <- proposal_2008 %>% 
