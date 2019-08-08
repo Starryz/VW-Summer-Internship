@@ -977,9 +977,9 @@ membership_2009_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
     TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
   ) %>% 
-  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>% 
-  na.omit()
+  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) 
 
 no_id_2009 <- dplyr::setdiff(membership_2009_big, membership_2009_small) %>% 
   left_join(advisors_full_2009) %>% 
+  drop_na(TEAM__C) %>% 
   write_csv("new/2009/no_id_2009.csv")
