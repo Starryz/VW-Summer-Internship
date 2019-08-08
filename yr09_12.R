@@ -15,7 +15,7 @@ program_cohort <- data.frame(
     "a2C39000002zYtNEAU",
     "a2C39000002zYt4EAE"
   ), 
-  "RECORDTYPEID" = "01239000000Ap02AAC",
+  "RECORDTYPEID" = "012390000009qIDAAY",
   "PROPOSAL_FUNDER__C" = "The Lemelson Foundation"
 )
 
