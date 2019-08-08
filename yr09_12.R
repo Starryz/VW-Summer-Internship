@@ -15,7 +15,7 @@ program_cohort <- data.frame(
     "a2C39000002zYtNEAU",
     "a2C39000002zYt4EAE"
   ), 
-   "RECORDTYPEID" = "01239000000Ap02AAC",
+  "RECORDTYPEID" = "01239000000Ap02AAC",
   "PROPOSAL_FUNDER__C" = "The Lemelson Foundation"
 )
 
@@ -40,15 +40,15 @@ extract_alias_p <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sa
 
 ## match Zenn ID and team name
 match_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx", 
-                    col_types = c("numeric", "text", "text", 
-                                  "text", "text", "numeric", "text", 
-                                  "text", "text", "text", "text", "text", 
-                                  "text", "text", "numeric", "text", 
-                                  "numeric", "text", "text", "text", 
-                                  "numeric", "text", "text", "text", 
-                                  "numeric", "text", "text", "numeric", 
-                                  "text", "text", "numeric", "text", 
-                                  "text", "text", "text", "text")) %>% 
+                         col_types = c("numeric", "text", "text", 
+                                       "text", "text", "numeric", "text", 
+                                       "text", "text", "text", "text", "text", 
+                                       "text", "text", "numeric", "text", 
+                                       "numeric", "text", "text", "text", 
+                                       "numeric", "text", "text", "text", 
+                                       "numeric", "text", "text", "numeric", 
+                                       "text", "text", "numeric", "text", 
+                                       "text", "text", "text", "text")) %>% 
   select(`Zenn ID`, `Grant Title`, `Institution Name`)
 
 match_c_2012 <- match_2012 %>% 
@@ -186,7 +186,8 @@ write_csv(proposal_2012, "new/2012/proposal_2012.csv")
 proposal_2012_narrow <- proposal_2012 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
   rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "NAME") %>% 
-  left_join(teamid_2012, by = "EXTERNAL_PROPOSAL_ID__C")
+  left_join(teamid_2012) %>% 
+  na.omit()
 
 # team
 team_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -259,7 +260,7 @@ membership_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2012_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -293,7 +294,7 @@ membership_2012_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2012_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -324,7 +325,6 @@ membership_2012_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2012_narrow) %>% 
   rename(     
-     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -335,7 +335,8 @@ membership_2012_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
     TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
   ) %>% 
-  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) 
+  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>% 
+  na.omit()
 
 no_id_2012 <- dplyr::setdiff(membership_2012_big, membership_2012_small) %>% 
   left_join(advisors_full_2012) %>% 
@@ -449,10 +450,11 @@ advisors_2011 <- advisors_full_2011 %>%
 teamid_2011 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2011/proposal_2011_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
   rename("PROPOSAL__C" = "ID") %>% 
-  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  na.omit()
 
 proposal_2011_narrow <- proposal_2011 %>% 
-    select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
+  select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
   rename("TEAM_NAME_TEXT_ONLY_HIDDEN__C" = "NAME") %>% 
   mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
   left_join(teamid_2011, by = "ZENN_ID__C")
@@ -471,7 +473,7 @@ membership_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2011_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -505,7 +507,7 @@ membership_2011_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2011_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -536,7 +538,7 @@ membership_2011_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2011_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -547,7 +549,8 @@ membership_2011_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
     TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
   ) %>% 
-  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) 
+  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>% 
+  na.omit()
 
 no_id_2011 <- dplyr::setdiff(membership_2011_big, membership_2011_small) %>% 
   left_join(advisors_full_2011) %>% 
@@ -662,7 +665,8 @@ advisors_2010 <- advisors_full_2010 %>%
 teamid_2010 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2010/proposal_2010_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
   rename("PROPOSAL__C" = "ID") %>% 
-  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  na.omit()
 
 proposal_2010_narrow <- proposal_2010 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
@@ -684,7 +688,7 @@ membership_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2010_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -718,7 +722,7 @@ membership_2010_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2010_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -749,7 +753,7 @@ membership_2010_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2010_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -760,7 +764,8 @@ membership_2010_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
     TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
   ) %>% 
-  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) 
+  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>% 
+  na.omit()
 
 no_id_2010 <- dplyr::setdiff(membership_2010_big, membership_2010_small) %>% 
   left_join(advisors_full_2010) %>% 
@@ -874,7 +879,8 @@ advisors_2009 <- advisors_full_2009 %>%
 teamid_2009 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2009/proposal_2009_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
   rename("PROPOSAL__C" = "ID") %>% 
-  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  na.omit()
 
 proposal_2009_narrow <- proposal_2009 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
@@ -896,7 +902,7 @@ membership_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2009_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -930,7 +936,7 @@ membership_2009_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2009_narrow) %>% 
   rename(     
-     
+    
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -961,7 +967,6 @@ membership_2009_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2009_narrow) %>% 
   rename(     
-     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -972,7 +977,8 @@ membership_2009_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
     TEAM__C, PROPOSAL__C, PROGRAM_COHORT_LOOKUP__C, 
     ROLE__C, STATUS__C, START_DATE__C, END_DATE__C, RECORDTYPEID
   ) %>% 
-  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) 
+  mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) %>% 
+  na.omit()
 
 no_id_2009 <- dplyr::setdiff(membership_2009_big, membership_2009_small) %>% 
   left_join(advisors_full_2009) %>% 

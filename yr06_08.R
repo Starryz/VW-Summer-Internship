@@ -219,7 +219,8 @@ task_2006 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
 teamid_2006 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/new_dataset_migrate/2006/proposal_2006_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
   rename("PROPOSAL__C" = "ID") %>% 
-  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  na.omit()
 
 proposal_2006_narrow <- proposal_2006 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
@@ -316,8 +317,9 @@ membership_2006_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   ) %>% 
   mutate(ROLE__C = ifelse(ROLE__C == "Dean of Faculty", "Dean", ROLE__C)) 
 
-no_id_2006 <- dplyr::setdiff(membership_2006_big, membership_2006_small) %>% 
+no_id_2006 <- dplyr::anti_join(membership_2006_big, membership_2006_small) %>% 
   left_join(advisors_full_2006) %>% 
+  drop_na(TEAM__C) %>% 
   write_csv("new/2006/no_id_2006.csv")
 
 # 2007  --------------
@@ -437,7 +439,8 @@ task_2007 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
 teamid_2007 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/new_dataset_migrate/2007/proposal_2007_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
   rename("PROPOSAL__C" = "ID") %>% 
-  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  na.omit()
 
 proposal_2007_narrow <- proposal_2007 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
@@ -536,6 +539,7 @@ membership_2007_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
 
 no_id_2007 <- dplyr::setdiff(membership_2007_big, membership_2007_small) %>% 
   left_join(advisors_full_2007) %>% 
+  drop_na(TEAM__C) %>% 
   write_csv("new/2007/no_id_2007.csv")
 
 # 2008  --------------
@@ -655,7 +659,8 @@ task_2008 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
 teamid_2008 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/new_dataset_migrate/2008/proposal_2008_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
   rename("PROPOSAL__C" = "ID") %>% 
-  mutate(ZENN_ID__C = as.character(ZENN_ID__C))
+  mutate(ZENN_ID__C = as.character(ZENN_ID__C)) %>% 
+  na.omit()
 
 proposal_2008_narrow <- proposal_2008 %>% 
   select(NAME, ZENN_ID__C, EXTERNAL_PROPOSAL_ID__C, PROGRAM_COHORT__C, RECORDTYPEID) %>% 
@@ -754,4 +759,5 @@ membership_2008_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
 
 no_id_2008 <- dplyr::setdiff(membership_2008_big, membership_2008_small) %>% 
   left_join(advisors_full_2008) %>% 
+  drop_na(TEAM__C) %>% 
   write_csv("new/2008/no_id_2008.csv")
