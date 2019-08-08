@@ -236,8 +236,7 @@ task_2012 <- read_excel("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/sustai
 
 teamid_2012 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2012/proposal_2012_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
-  rename("TEAMID" = "ID", 
-         "PROPOSAL__C" = "TEAM__C") %>% 
+  rename("PROPOSAL__C" = "ID") %>% 
   mutate(ZENN_ID__C = as.character(ZENN_ID__C))
 
 proposal_2012_narrow <- proposal_2012 %>% 
@@ -260,7 +259,7 @@ membership_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2012_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -293,7 +292,7 @@ membership_2012_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2012_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -324,7 +323,7 @@ membership_2012_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2012_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -448,8 +447,7 @@ advisors_2011 <- advisors_full_2011 %>%
 
 teamid_2011 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2011/proposal_2011_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
-  rename("TEAMID" = "ID", 
-         "PROPOSAL__C" = "TEAM__C") %>% 
+  rename("PROPOSAL__C" = "ID") %>% 
   mutate(ZENN_ID__C = as.character(ZENN_ID__C))
 
 proposal_2011_narrow <- proposal_2011 %>% 
@@ -472,7 +470,7 @@ membership_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2011_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -505,7 +503,7 @@ membership_2011_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2011_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -536,7 +534,7 @@ membership_2011_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2011_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -661,8 +659,7 @@ advisors_2010 <- advisors_full_2010 %>%
 
 teamid_2010 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2010/proposal_2010_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
-  rename("TEAMID" = "ID", 
-         "PROPOSAL__C" = "TEAM__C") %>% 
+  rename("PROPOSAL__C" = "ID") %>% 
   mutate(ZENN_ID__C = as.character(ZENN_ID__C))
 
 proposal_2010_narrow <- proposal_2010 %>% 
@@ -685,7 +682,7 @@ membership_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2010_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -718,7 +715,7 @@ membership_2010_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2010_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -749,7 +746,7 @@ membership_2010_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2010_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -873,8 +870,7 @@ advisors_2009 <- advisors_full_2009 %>%
 
 teamid_2009 <- read_csv("/Volumes/GoogleDrive/My Drive/Sustainable_Vision/2009-2012 to be uploaded/2009/proposal_2009_extract.csv") %>% 
   select(ID, ZENN_ID__C, TEAM__C) %>% 
-  rename("TEAMID" = "ID", 
-         "PROPOSAL__C" = "TEAM__C") %>% 
+  rename("PROPOSAL__C" = "ID") %>% 
   mutate(ZENN_ID__C = as.character(ZENN_ID__C))
 
 proposal_2009_narrow <- proposal_2009 %>% 
@@ -897,7 +893,7 @@ membership_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2009_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -930,7 +926,7 @@ membership_2009_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2009_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
@@ -961,7 +957,7 @@ membership_2009_big <- read_excel("~/Desktop/Sustainable_Vision/sustainable_visi
   rename("ZENN_ID__C" = "Zenn ID") %>% 
   left_join(proposal_2009_narrow) %>% 
   rename(     
-    "TEAM__C" = "TEAMID",
+     
     "PROGRAM_COHORT_LOOKUP__C" = "PROGRAM_COHORT__C",
     "START_DATE__C" = "Actual Period Begin",
     "END_DATE__C" = "Actual Period End"
