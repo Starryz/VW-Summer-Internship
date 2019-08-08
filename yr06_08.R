@@ -257,6 +257,7 @@ membership_2006 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   left_join(contacts_1, by = "EMAIL") %>% 
   rename("MEMBER__C" = "ID") %>% 
   na.omit() %>% 
+  mutate(RECORDTYPEID = "012390000009qIDAAY") %>% 
   write_csv("new/2006/member_2006.csv")
 
 membership_2006_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2006_proposals.xlsx") %>% 
@@ -474,6 +475,7 @@ membership_2007 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   left_join(contacts_1, by = "EMAIL") %>% 
   rename("MEMBER__C" = "ID") %>% 
   na.omit() %>% 
+  mutate(RECORDTYPEID = "012390000009qIDAAY") %>% 
   write_csv("new/2007/member_2007.csv")
 
 membership_2007_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2007_proposals.xlsx") %>% 
@@ -691,6 +693,7 @@ membership_2008 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   left_join(contacts_1, by = "EMAIL") %>% 
   rename("MEMBER__C" = "ID") %>% 
   na.omit() %>% 
+  mutate(RECORDTYPEID = "012390000009qIDAAY") %>%
   write_csv("new/2008/member_2008.csv")
 
 membership_2008_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2008_proposals.xlsx") %>% 
