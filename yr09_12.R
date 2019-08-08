@@ -15,7 +15,7 @@ program_cohort <- data.frame(
     "a2C39000002zYtNEAU",
     "a2C39000002zYt4EAE"
   ), 
-  "RECORDTYPEID" = "012390000009qIDAAY",
+   "RECORDTYPEID" = "01239000000Ap02AAC",
   "PROPOSAL_FUNDER__C" = "The Lemelson Foundation"
 )
 
@@ -276,6 +276,7 @@ membership_2012 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   left_join(contacts_1, by = "EMAIL") %>% 
   rename("MEMBER__C" = "ID") %>% 
   na.omit() %>% 
+  mutate(RECORDTYPEID = "012390000009qIDAAY") %>%
   write_csv("new/2012/member_2012.csv")
 
 membership_2012_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2012_proposals.xlsx") %>% 
@@ -487,6 +488,7 @@ membership_2011 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   left_join(contacts_1, by = "EMAIL") %>% 
   rename("MEMBER__C" = "ID") %>% 
   na.omit() %>% 
+  mutate(RECORDTYPEID = "012390000009qIDAAY") %>%
   write_csv("new/2011/member_2011.csv")
 
 membership_2011_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2011_proposals.xlsx") %>% 
@@ -699,6 +701,7 @@ membership_2010 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   left_join(contacts_1, by = "EMAIL") %>% 
   rename("MEMBER__C" = "ID") %>% 
   na.omit() %>% 
+  mutate(RECORDTYPEID = "012390000009qIDAAY") %>%
   write_csv("new/2010/member_2010.csv")
 
 membership_2010_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2010_proposals.xlsx") %>% 
@@ -910,6 +913,7 @@ membership_2009 <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_g
   left_join(contacts_1, by = "EMAIL") %>% 
   rename("MEMBER__C" = "ID") %>% 
   na.omit() %>% 
+  mutate(RECORDTYPEID = "012390000009qIDAAY") %>%
   write_csv("new/2009/member_2009.csv")
 
 membership_2009_small <- read_excel("~/Desktop/Sustainable_Vision/sustainable_vision_grants_2009_proposals.xlsx") %>% 
